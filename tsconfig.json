@@ -1,7 +1,15 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "compilerOptions": {
+    "noEmitOnError": false,      // Allow emitting files even if there are TypeScript errors
+    "strict": true,              // Enable strict type-checking (recommended)
+    "esModuleInterop": true,     // For compatibility with ES6 modules
+    "skipLibCheck": true,        // Skip type-checking for declaration files (useful for large node_modules)
+    "target": "esnext",          // Target modern JavaScript
+    "module": "esnext",          // Use modern ES modules
+    "moduleResolution": "node",  // Resolve modules the same way Node.js does
+    "jsx": "react-jsx"           // JSX support for React 17+ (since Vite uses this)
+  },
+  "include": [
+    "src/**/*"  // Ensure all files in the src folder are included for compilation
   ]
 }
