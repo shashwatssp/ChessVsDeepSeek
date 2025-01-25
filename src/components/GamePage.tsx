@@ -14,6 +14,7 @@ const Game: React.FC = () => {
   const playerName = localStorage.getItem('playerName') || '';
   const navigate = useNavigate();
   const isAITurn = moveHistory.length % 2 === 1;
+  const isFirstTurn = moveHistory.length === 0; // Check if it's the first turn
 
   useEffect(() => {
     const calculateBoardWidth = () => {
@@ -99,20 +100,37 @@ const Game: React.FC = () => {
     <div className="center-container">
       <div className="game-container">
         {gameOverMessage && <div className="game-over">{gameOverMessage}</div>}
+
+        {!isAITurn && (
+          <div
+            className="player-turn-message"
+            style={{
+              padding: '15px',
+              fontSize: '18px',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              color: '#000', // Black color for player's turn
+            }}
+          >
+            {isFirstTurn ? 'Drag and drop to move White pieces' : 'Your Turn'}
+          </div>
+        )}
+
         {isAITurn && (
-  <div
-    className="ai-turn-message"
-    style={{
-      padding: '15px',
-      fontSize: '18px',
-      textAlign: 'center',
-      fontWeight: 'bold',
-      color: '#000', // Black color for AI's turn
-    }}
-  >
-    DeepSeek's Turn
-  </div>
-)}
+          <div
+            className="ai-turn-message"
+            style={{
+              padding: '15px',
+              fontSize: '18px',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              color: '#000', // Black color for AI's turn
+            }}
+          >
+            DeepSeek's Turn
+          </div>
+        )}
+
         <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />
       </div>
     </div>
