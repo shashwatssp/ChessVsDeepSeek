@@ -18,3 +18,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHESSVSDEEPSEEK }}
           channelId: live
           projectId: chessvsdeepseek
+        env:
+          VITE_DEEPSEEK_API_KEY: ${{ secrets.VITE_DEEPSEEK_API_KEY }}  # Inject the secret here
