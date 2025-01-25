@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { useNavigate } from 'react-router-dom';
-import { Chess } from 'chess.js';
+import {Chess} from 'chess.js';
 import { handleMove } from '../api/deepseek';
 import '../App.css'; 
 
@@ -93,10 +93,11 @@ const Game: React.FC = () => {
       setError('Something went wrong with the AI move.');
     }
   };
-
+ 
   const makeMove = (from: string, to: string, player: "H" | "A"): string | null => {
     try {
-      const move = game.move({ from: from as Chess.Square, to: to as Chess.Square, promotion: 'q' });
+      // Type casting 'from' and 'to' to 'any' to avoid TypeScript errors
+      const move = game.move({ from: from as any, to: to as any, promotion: 'q' });
       if (move) {
         setGame(new Chess(game.fen()));
         setMoveHistory((prev) => [...prev, `${player}-${from}${to}`]);
