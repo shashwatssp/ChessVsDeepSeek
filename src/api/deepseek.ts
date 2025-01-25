@@ -3,6 +3,8 @@ import { Chess } from 'chess.js';  // Import chess.js
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1';
 const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
 
+
+
 // Initialize chess.js instance to handle game logic
 const chess = new Chess();
 
