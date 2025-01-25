@@ -1,94 +1,136 @@
-/* General Reset */
-* {
+/* Global Styles */
+body {
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, #ffffff, #f3f3f3);
-  color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: hidden;
+  flex-direction: column;
 }
 
-/* Name Input Screen */
+h1, h2, p {
+  color: #333;
+  margin: 0;
+  font-weight: 300;
+}
+
+button {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 20px;
+  width: 200px;
+}
+
+button:hover {
+  background-color: #005bb5;
+  transform: scale(1.05);
+}
+
+input {
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 100%;
+  margin-top: 20px;
+}
+
+input:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+/* Centered Layout */
 .name-input {
-  text-align: center;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 40px 20px;
-  width: 90%;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
   max-width: 400px;
+  text-align: center;
 }
 
 .name-input h1 {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 36px;
+  font-weight: 600;
   margin-bottom: 20px;
-  color: #222;
-  letter-spacing: 1px;
+  color: #007aff;
 }
 
-.ai-turn-message {
-  padding: 15px;
+.name-input h2 {
   font-size: 18px;
-  text-align: center;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Input and Play button */
+.input-section {
+  margin-bottom: 40px;
+}
+
+/* Match Stats Section */
+.match-stats {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.match-stats p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Total Moves */
+.total-moves {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.leaderboard {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.leaderboard ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.leaderboard li {
+  font-size: 18px;
+  color: green;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* STATISTICS Section */
+.match-stats h2 {
   font-weight: bold;
-  color: #000; /* Black color for AI's turn */
+  font-size: 32px;
+  color: #007aff;
+  text-transform: uppercase;
 }
 
-
-.name-input input {
-  width: 100%;
-  padding: 12px 15px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  outline: none;
-  margin-bottom: 20px;
-  transition: box-shadow 0.3s ease;
+.leaderboard h2 {
+  font-weight: bold;
+  font-size: 32px;
+  color: #007aff;
+  text-transform: uppercase;
 }
 
-.name-input input:focus {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-color: #007e73;
-}
-
-.name-input button {
-  background: #007e73;
-  color: #fff;
-  padding: 12px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.name-input button:hover {
-  background: #005f55;
-  transform: translateY(-2px);
-}
-
-.name-input button:active {
-  background: #004c43;
-  transform: translateY(0);
-}
-
-/* Responsiveness */
-@media (max-width: 600px) {
-  .name-input {
-    width: 95%;
-    padding: 20px;
-  }
-
-  .name-input h1 {
-    font-size: 1.8rem;
-  }
+.leaderboard li {
+  color: green;
+  font-size: 20px;
+  font-weight: 600;
 }
