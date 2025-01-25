@@ -1,4 +1,4 @@
-/* Global Reset */
+/* General Reset */
 * {
   margin: 0;
   padding: 0;
@@ -6,151 +6,89 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f4f4f9;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #ffffff, #f3f3f3);
   color: #333;
-}
-
-h1, h2, h3 {
-  font-family: 'Lora', serif;
-  font-weight: 400;
-}
-
-/* CSS for centering the game container */
-.center-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width: 100%;
-  background-color: #f4f4f9;
-}
-
-.game-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  max-width: 800px;
-  padding: 20px; /* Added padding for responsiveness */
-}
-
-.game-over-message {
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 15px;
-  margin-top: 20px;
-  font-size: 1.2em;
-  border-radius: 5px;
-}
-
-/* Chessboard */
-.react-chessboard {
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  margin-top: 30px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;  /* Ensures the chessboard is centered */
+  overflow: hidden;
 }
 
 /* Name Input Screen */
 .name-input {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ffffff, #e9ecef);
-  height: 100vh;
-  padding: 20px;
-  color: #333;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px 20px;
+  width: 90%;
+  max-width: 400px;
 }
 
 .name-input h1 {
-  font-size: 2.2em;
+  font-size: 2rem;
+  font-weight: bold;
   margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  font-weight: 400;
+  color: #222;
+  letter-spacing: 1px;
 }
 
-.name-input input {
-  padding: 12px;
-  margin-bottom: 15px;
-  font-size: 1.2em;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  width: 80%;
-  max-width: 350px;
+.ai-turn-message {
+  padding: 15px;
+  font-size: 18px;
   text-align: center;
+  font-weight: bold;
+  color: #000; /* Black color for AI's turn */
+}
+
+
+.name-input input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   outline: none;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
 }
 
 .name-input input:focus {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-color: #007e73;
 }
 
 .name-input button {
-  padding: 12px 25px;
-  background-color: #007e73;
-  color: white;
-  font-size: 1.2em;
+  background: #007e73;
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .name-input button:hover {
-  background-color: #005f55;
+  background: #005f55;
+  transform: translateY(-2px);
 }
 
-/* Responsive Styles */
+.name-input button:active {
+  background: #004c43;
+  transform: translateY(0);
+}
+
+/* Responsiveness */
 @media (max-width: 600px) {
-  .game-container {
-    padding: 10px;
+  .name-input {
+    width: 95%;
+    padding: 20px;
   }
 
-  .react-chessboard {
-    width: 100% !important;
-    max-width: 300px;
-    height: auto !important;
-  }
-
-  h1 {
-    font-size: 1.8em;  /* Smaller font size for mobile */
-    padding: 10px; /* Adjust padding for mobile */
-  }
-}
-
-@media (min-width: 601px) and (max-width: 1024px) {
-  .react-chessboard {
-    width: 80% !important;
-    max-width: 480px;
-    height: auto !important;
-  }
-
-  h1 {
-    font-size: 2.2em;
-    padding: 15px; /* Adjust padding for tablet */
-  }
-}
-
-@media (min-width: 1025px) {
-  .react-chessboard {
-    width: 50% !important;
-    max-width: 600px;
-    height: auto !important;
-  }
-
-  h1 {
-    font-size: 2.5em;
-    padding: 20px; /* Adjust padding for desktop */
+  .name-input h1 {
+    font-size: 1.8rem;
   }
 }
