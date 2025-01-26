@@ -17,9 +17,11 @@ const Game = () => {
     const [aiLoading, setAiLoading] = useState(false);
     const [leaderboard, setLeaderboard] = useState([]);
     const [matchStatus, setMatchStatus] = useState('Match is Live');
+    const [isFirstMove, setFirstMove] = useState(true);
     const playerName = localStorage.getItem('playerName') || '';
     const navigate = useNavigate();
     const isAITurn = moveHistory.length % 2 === 1;
+    let winner = '';
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
@@ -85,6 +87,10 @@ const Game = () => {
                 }
                 retries++;
             }
+            console.log("winner is: ");
+            console.log(winner);
+            if (retries == 50 && winner == '')
+                setError('DeepSeek Failed to make a move. Please restart the game.');
         }
         catch {
             setError('An error occurred during AI’s turn.');
@@ -103,6 +109,8 @@ const Game = () => {
                 checkGameOver();
                 return move.san;
             }
+            if (isFirstMove)
+                setFirstMove(false);
             return null;
         }
         catch (err) {
@@ -127,7 +135,6 @@ const Game = () => {
     const checkGameOver = () => {
         if (game.game_over()) {
             let message = '';
-            let winner = '';
             if (game.in_checkmate()) {
                 const lastPlayer = moveHistory.length % 2 === 1 ? 'AI' : 'Human';
                 message = `Checkmate! ${lastPlayer === 'Human' ? 'You' : 'AI'} won.`;
@@ -152,10 +159,14 @@ const Game = () => {
                 updateWinCount(winner);
                 if (winner === 'Human') {
                     addToLeaderboard(playerName);
+                    setGameOverMessage('Checkmate! You won.');
+                    setMatchStatus('Checkmate! You won.');
                     setError('CONGRATULATIONS!! YOU WON!!');
                 }
                 else {
                     addToLeaderboard('DeepSeek');
+                    setGameOverMessage('Checkmate! You Lost.');
+                    setMatchStatus('Checkmate! You Lost.');
                     setError('OOPS!! BETTER LUCK NEXT TIME');
                 }
             }
@@ -204,6 +215,6 @@ const Game = () => {
     };
     if (error)
         return _jsx("div", { className: "error", children: error });
-    return (_jsxs(motion.div, { className: "game-container", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 1 }, children: [gameOverMessage && (_jsx(motion.div, { className: "game-over", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 1 }, children: gameOverMessage })), _jsx(motion.div, { className: "turn-message", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.5 }, children: _jsx("div", { className: "ai-turn-message", children: isAITurn ? "DeepSeek's Turn" : "Your Turn" }) }), aiLoading ? (_jsx(Chessboard, { position: game.fen(), onPieceDrop: onDrop, boardWidth: boardWidth })) : (_jsx(Chessboard, { position: game.fen(), onPieceDrop: onDrop, boardWidth: boardWidth }))] }));
+    return (_jsxs(motion.div, { className: "game-container", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 1 }, children: [gameOverMessage && (_jsx(motion.div, { className: "game-over", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 1 }, children: gameOverMessage })), _jsx(motion.div, { className: "turn-message-container", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.5 }, children: (_jsx("div", { className: `turn-message ${isAITurn ? 'ai-turn' : 'human-turn'}`, children: isAITurn ? "DeepSeek's Turn" : "Your Turn" })) }), aiLoading ? (_jsx(Chessboard, { position: game.fen(), onPieceDrop: onDrop, boardWidth: boardWidth })) : (_jsx(Chessboard, { position: game.fen(), onPieceDrop: onDrop, boardWidth: boardWidth }))] }));
 };
 export default Game;

@@ -10,6 +10,7 @@ import { ClipLoader, ClockLoader } from 'react-spinners';
 import '../App.css';
 
 const Game: React.FC = () => {
+
   const [game, setGame] = useState(new Chess());
   const [error, setError] = useState<string | null>(null);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
@@ -18,9 +19,12 @@ const Game: React.FC = () => {
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [leaderboard, setLeaderboard] = useState<{ name: string; moves: number }[]>([]);
   const [matchStatus, setMatchStatus] = useState<string>('Match is Live');
+  const [isFirstMove, setFirstMove] = useState<boolean>(true);
   const playerName = localStorage.getItem('playerName') || '';
   const navigate = useNavigate();
   const isAITurn = moveHistory.length % 2 === 1;
+  let winner = '';
+  
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -74,7 +78,7 @@ const Game: React.FC = () => {
       setAiLoading(true);
       let retries = 0;
       let failedMoves: string[] = [];
-      while (retries < 50) {
+      while (retries <50) {
         const aiMove = await handleMove(game.fen(), failedMoves, 'A');
         if (aiMove) {
           const move = makeMove(aiMove.slice(0, 2), aiMove.slice(2, 4), 'A');
@@ -83,6 +87,12 @@ const Game: React.FC = () => {
         }
         retries++;
       }
+      
+      console.log("winner is: ");
+      console.log(winner);
+
+      if(retries==50 && winner=='')
+      setError('DeepSeek Failed to make a move. Please restart the game.');
     } catch {
       setError('An error occurred during AI’s turn.');
     } finally {
@@ -100,6 +110,10 @@ const Game: React.FC = () => {
         checkGameOver();
         return move.san;
       }
+
+      if(isFirstMove)
+      setFirstMove(false);
+    
       return null;
     } catch (err) {
       console.error('Error during makeMove:', err);
@@ -124,7 +138,6 @@ const Game: React.FC = () => {
   const checkGameOver = () => {
     if (game.game_over()) {
       let message = '';
-      let winner = '';
     
       if (game.in_checkmate()) {
         const lastPlayer = moveHistory.length % 2 === 1 ? 'AI' : 'Human';
@@ -150,10 +163,14 @@ const Game: React.FC = () => {
 
         if (winner === 'Human') {
           addToLeaderboard(playerName);
+          setGameOverMessage('Checkmate! You won.');
+          setMatchStatus('Checkmate! You won.');
           setError('CONGRATULATIONS!! YOU WON!!');
         }
         else {
           addToLeaderboard('DeepSeek');
+          setGameOverMessage('Checkmate! You Lost.');
+          setMatchStatus('Checkmate! You Lost.');
           setError('OOPS!! BETTER LUCK NEXT TIME');
         }
       }
@@ -221,16 +238,18 @@ const Game: React.FC = () => {
         </motion.div>
       )}
   
-      <motion.div
-        className="turn-message"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="ai-turn-message">
-          {isAITurn ? "DeepSeek's Turn" : "Your Turn"}
-        </div>
-      </motion.div>
+  <motion.div
+  className="turn-message-container"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.5 }}
+>
+   {(
+    <div className={`turn-message ${isAITurn ? 'ai-turn' : 'human-turn'}`}>
+      {isAITurn ? "DeepSeek's Turn" : "Your Turn"}
+    </div>
+  )}
+</motion.div>
   
       {aiLoading ? (
           <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />

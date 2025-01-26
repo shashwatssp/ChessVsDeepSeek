@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { firestore } from '../api/firebaseConfig'; 
 import { getDoc, collection, getDocs, doc } from 'firebase/firestore'; 
 import { motion } from 'framer-motion'; // Import Framer Motion
-import { ClipLoader } from 'react-spinners'; // Import ClipLoader
+import { BeatLoader } from 'react-spinners'; // Import BeatLoader
 
 const NameInput: React.FC = () => {
   const [name, setName] = useState('');
@@ -85,7 +85,7 @@ const NameInput: React.FC = () => {
       <div className="match-stats">
         <h2>STATISTICS</h2>
         {loading ? (
-          <ClipLoader size={30} color={"#4A90E2"} loading={loading} />
+          <BeatLoader size={20} color={"#4A90E2"} loading={loading} />
         ) : winStats ? (
           <p>
             Humans: <strong>{winStats.humanWins}</strong> wins (
@@ -105,7 +105,7 @@ const NameInput: React.FC = () => {
       <div className="total-moves">
         <h2>Total Moves Played:</h2>
         {loading ? (
-          <ClipLoader size={30} color={"#4A90E2"} loading={loading} />
+          <BeatLoader size={20} color={"#4A90E2"} loading={loading} />
         ) : (
           <p>{totalMoves !== null ? totalMoves : 'Failed to load moves'}</p>
         )}
@@ -116,7 +116,7 @@ const NameInput: React.FC = () => {
   {fetchError ? (
     <p>Feature rolling out soon</p>
   ) : loading ? (
-    <ClipLoader size={30} color={"#4A90E2"} loading={loading} />
+    <BeatLoader size={20} color={"#4A90E2"} loading={loading} />
   ) : leaderboard.length > 0 ? (
     <ul>
       {leaderboard.slice(0, 3).map((player, index) => (
