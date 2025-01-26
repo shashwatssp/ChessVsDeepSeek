@@ -181,11 +181,11 @@ const Game: React.FC = () => {
     try {
       const statsDoc = await getDoc(doc(firestore, 'matchStats', 'stats'));
       if (statsDoc.exists()) {
-        const stats = statsDoc.data() as { humanWins: number; aiWins: number; draws: number };
+        const stats = statsDoc.data() as { humanWins: number; aiWins: number; draw: number };
         const updatedStats = {
           humanWins: stats.humanWins + (result === 'Human' ? 1 : 0),
           aiWins: stats.aiWins + (result === 'AI' ? 1 : 0),
-          draws: stats.draws + (result === 'Draw' ? 1 : 0),
+          draw: stats.draw + (result === 'Draw' ? 1 : 0),
         };
         await updateDoc(doc(firestore, 'matchStats', 'stats'), updatedStats);
       }

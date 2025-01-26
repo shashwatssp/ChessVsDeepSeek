@@ -180,7 +180,7 @@ const Game = () => {
                 const updatedStats = {
                     humanWins: stats.humanWins + (result === 'Human' ? 1 : 0),
                     aiWins: stats.aiWins + (result === 'AI' ? 1 : 0),
-                    draws: stats.draws + (result === 'Draw' ? 1 : 0),
+                    draw: stats.draw + (result === 'Draw' ? 1 : 0),
                 };
                 await updateDoc(doc(firestore, 'matchStats', 'stats'), updatedStats);
             }
