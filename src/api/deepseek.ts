@@ -72,16 +72,17 @@ export async function handleMove(
             {
               role: 'system',
               content: `Act as a chess grandmaster. Follow these strict rules:
-            1. Generate ONLY legal moves in SAN format (e.g., Nf3, exd5, O-O)
-            2. Current FEN: ${fen}
-            3. Banned moves: ${failedMoves.join(', ')} (including all capture variants)
-            4. Priorities in order:
+            1. Current FEN: ${fen}
+            2. Generate ONLY legal moves in SAN format (e.g., Nf3, exd5, O-O)
+            3. Banned moves: ${failedMoves.join(', ')} (including all capture variants).
+            4. Your priority should be thinking about valid moves and those moves which are not there in Banned Moves and to ensure that you dont have to retry many times.
+            5. Next Priorities in order:
                a) Forced checkmate sequences
                b) Material gain tactics
                c) Positional advantages (center control, king safety, pawn structure)
                d) Long-term strategic planning
-            5. Calculate 3 candidate moves before answering
-            6. Never explain - only output the move`
+            6. Calculate 3 candidate moves before answering
+            7. Never explain - only output the move`
             },
             {
               role: 'user',

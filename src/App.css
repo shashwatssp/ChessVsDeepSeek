@@ -61,8 +61,8 @@ input:focus {
 }
 
 .name-input h1 {
-  font-size: 36px;
-  font-weight: 600;
+  font-size: 31px;
+  font-weight: 500;
   margin-bottom: 20px;
   color: #007aff;
 }
@@ -76,29 +76,29 @@ input:focus {
 
 /* Input and Play button */
 .input-section {
-  margin-bottom: 40px;
+  margin-bottom: 35px;
 }
 
 /* Match Stats Section */
 .match-stats {
-  margin-top: 40px;
+  margin-top: 35px;
   text-align: left;
 }
 
 .match-stats p {
-  font-size: 16px;
+  font-size: 14px;
   color: #555;
   line-height: 1.5;
 }
 
 /* Total Moves */
 .total-moves {
-  margin-top: 20px;
+  margin-top: 18px;
   text-align: left;
 }
 
 .leaderboard {
-  margin-top: 40px;
+  margin-top: 35px;
   text-align: left;
 }
 
@@ -110,27 +110,58 @@ input:focus {
 .leaderboard li {
   font-size: 18px;
   color: green;
-  padding: 8px 0;
+  padding: 7px 0;
   border-bottom: 1px solid #ddd;
 }
 
 /* STATISTICS Section */
 .match-stats h2 {
   font-weight: bold;
-  font-size: 32px;
+  font-size: 28px;
   color: #007aff;
   text-transform: uppercase;
 }
 
 .leaderboard h2 {
   font-weight: bold;
-  font-size: 32px;
+  font-size: 28px;
   color: #007aff;
   text-transform: uppercase;
 }
 
 .leaderboard li {
   color: green;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
 }
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.turn-message {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 20px;
+}
+
+.game-over {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #d9534f;
+  margin-top: 20px;
+}
+
+.error {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #f44336;
+  margin-top: 20px;
+}
+
+
+

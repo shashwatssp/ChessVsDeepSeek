@@ -3,8 +3,10 @@ import { Chessboard } from 'react-chessboard';
 import { useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import { handleMove } from '../api/deepseek';
-import { firestore } from '../api/firebaseConfig'; 
-import { doc, getDoc, updateDoc, getDocs, collection } from 'firebase/firestore';
+import { firestore } from '../api/firebaseConfig';
+import { doc, getDoc, updateDoc, setDoc, collection, getDocs, addDoc } from 'firebase/firestore';
+import { motion } from 'framer-motion';
+import { ClipLoader, ClockLoader } from 'react-spinners';
 import '../App.css';
 
 const Game: React.FC = () => {
@@ -13,11 +15,12 @@ const Game: React.FC = () => {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
   const [boardWidth, setBoardWidth] = useState(600);
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [leaderboard, setLeaderboard] = useState<{ name: string; moves: number }[]>([]);
+  const [matchStatus, setMatchStatus] = useState<string>('Match is Live');
   const playerName = localStorage.getItem('playerName') || '';
   const navigate = useNavigate();
   const isAITurn = moveHistory.length % 2 === 1;
-  const isFirstTurn = moveHistory.length === 0; // Check if it's the first turn
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -47,6 +50,10 @@ const Game: React.FC = () => {
   }, []);
 
   const onDrop = (sourceSquare: string, targetSquare: string): boolean => {
+    if (matchStatus !== 'Match is Live') {
+      alert(`Game over: ${matchStatus}`);
+      return false;
+    }
     try {
       const move = makeMove(sourceSquare, targetSquare, 'H');
       if (move === null) {
@@ -62,7 +69,9 @@ const Game: React.FC = () => {
   };
 
   const handleAIMove = async () => {
+    if (matchStatus !== 'Match is Live') return;
     try {
+      setAiLoading(true);
       let retries = 0;
       let failedMoves: string[] = [];
       while (retries < 50) {
@@ -74,9 +83,10 @@ const Game: React.FC = () => {
         }
         retries++;
       }
-      setError('AI failed to make a move.');
     } catch {
       setError('An error occurred during AI’s turn.');
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -87,7 +97,6 @@ const Game: React.FC = () => {
         setGame(new Chess(game.fen()));
         setMoveHistory((prev) => [...prev, `${player}-${from}${to}`]);
         updateMoveCount();
-        console.log(`Move made: ${from} to ${to}, Current Board: ${game.fen()}`);
         checkGameOver();
         return move.san;
       }
@@ -112,55 +121,55 @@ const Game: React.FC = () => {
     }
   };
 
-  const updateLeaderboard = async () => {
-    try {
-      if (leaderboard.length < 5 || moveHistory.length <= leaderboard[4].moves) {
-        const existingPlayerIndex = leaderboard.findIndex((player) => player.name === playerName);
-        if (existingPlayerIndex !== -1) {
-          leaderboard[existingPlayerIndex].moves = moveHistory.length;
-        } else {
-          leaderboard.push({ name: playerName, moves: moveHistory.length });
-        }
-
-        const updatedLeaderboard = leaderboard.sort((a, b) => a.moves - b.moves).slice(0, 5);
-
-        // Update leaderboard in Firestore
-        const leaderboardRef = collection(firestore, 'leaderboard');
-        await Promise.all(
-          updatedLeaderboard.map(async (player, index) => {
-            const playerRef = doc(leaderboardRef, player.name);
-            await updateDoc(playerRef, { name: player.name, moves: player.moves });
-          })
-        );
-      }
-    } catch (error) {
-      console.error('Error updating leaderboard:', error);
-    }
-  };
-
   const checkGameOver = () => {
     if (game.game_over()) {
       let message = '';
       let winner = '';
+    
       if (game.in_checkmate()) {
-        message = 'Checkmate! ';
-        winner = moveHistory.length % 2 === 0 ? 'AI' : 'Human';
-      } else if (game.in_stalemate()) message = 'Stalemate! It’s a draw.';
-      else if (game.insufficient_material()) message = 'Draw due to insufficient material.';
-      else if (game.in_draw()) message = 'Draw by threefold repetition or 50-move rule.';
-
+        const lastPlayer = moveHistory.length % 2 === 1 ? 'AI' : 'Human';
+        message = `Checkmate! ${lastPlayer === 'Human' ? 'You' : 'AI'} won.`;
+        winner = lastPlayer;
+      } else if (game.in_stalemate()) {
+        message = 'Stalemate! It’s a draw.';
+        updateWinCount('Draw');
+      } else if (game.insufficient_material()) {
+        message = 'Draw due to insufficient material.';
+        updateWinCount('Draw');
+      } else if (game.in_draw()) {
+        message = 'Draw by threefold repetition or 50-move rule.';
+        updateWinCount('Draw');
+        setError('OOPS!! MATCH IS DRAW');
+      }
+    
+      setMatchStatus(message); // Automatically updates match status
       setGameOverMessage(message);
-      updateWinCount(winner);
-      updateLeaderboard();
+    
+      if (winner) {
+        updateWinCount(winner);
+
+        if (winner === 'Human') {
+          addToLeaderboard(playerName);
+          setError('CONGRATULATIONS!! YOU WON!!');
+        }
+        else {
+          addToLeaderboard('DeepSeek');
+          setError('OOPS!! BETTER LUCK NEXT TIME');
+        }
+      }
     }
   };
 
-  const updateWinCount = async (winner: string) => {
+  const updateWinCount = async (result: string) => {
     try {
       const statsDoc = await getDoc(doc(firestore, 'matchStats', 'stats'));
       if (statsDoc.exists()) {
-        const stats = statsDoc.data() as { humanWins: number; aiWins: number };
-        const updatedStats = winner === 'Human' ? { humanWins: stats.humanWins + 1, aiWins: stats.aiWins } : { humanWins: stats.humanWins, aiWins: stats.aiWins + 1 };
+        const stats = statsDoc.data() as { humanWins: number; aiWins: number; draws: number };
+        const updatedStats = {
+          humanWins: stats.humanWins + (result === 'Human' ? 1 : 0),
+          aiWins: stats.aiWins + (result === 'AI' ? 1 : 0),
+          draws: stats.draws + (result === 'Draw' ? 1 : 0),
+        };
         await updateDoc(doc(firestore, 'matchStats', 'stats'), updatedStats);
       }
     } catch (error) {
@@ -168,51 +177,69 @@ const Game: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (!playerName) navigate('/');
-  }, [playerName, navigate]);
+  const updateLeaderboard = async () => {
+    try {
+      const leaderboardSnapshot = await getDocs(collection(firestore, 'leaderboard'));
+      const leaderboardData = leaderboardSnapshot.docs.map((doc) => ({
+        name: doc.data().name,
+        moves: doc.data().moves,
+      }));
+      setLeaderboard(leaderboardData.sort((a, b) => a.moves - b.moves)); // Sort leaderboard
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
+
+  const addToLeaderboard = async (name: string) => {
+    try {
+      const moves = moveHistory.length;
+      const docRef = await addDoc(collection(firestore, 'leaderboard'), { name, moves });
+      console.log('Document written with ID:', docRef.id);
+      updateLeaderboard(); // Refresh the leaderboard after adding the new entry
+    } catch (error) {
+      console.error('Error adding to leaderboard:', error);
+    }
+  };
 
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="center-container">
-      <div className="game-container">
-        {gameOverMessage && <div className="game-over">{gameOverMessage}</div>}
-
-        {!isAITurn && (
-          <div
-            className="player-turn-message"
-            style={{
-              padding: '15px',
-              fontSize: '18px',
-              textAlign: 'center',
-              fontWeight: 'bold',
-              color: '#000', // Black color for player's turn
-            }}
-          >
-            {isFirstTurn ? 'Drag and drop to move White pieces' : 'Your Turn'}
-          </div>
-        )}
-
-        {isAITurn && (
-          <div
-            className="ai-turn-message"
-            style={{
-              padding: '15px',
-              fontSize: '18px',
-              textAlign: 'center',
-              fontWeight: 'bold',
-              color: '#000', // Black color for AI's turn
-            }}
-          >
-            DeepSeek's Turn
-          </div>
-        )}
-
+    <motion.div
+      className="game-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
+      {gameOverMessage && (
+        <motion.div
+          className="game-over"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          {gameOverMessage}
+        </motion.div>
+      )}
+  
+      <motion.div
+        className="turn-message"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="ai-turn-message">
+          {isAITurn ? "DeepSeek's Turn" : "Your Turn"}
+        </div>
+      </motion.div>
+  
+      {aiLoading ? (
+          <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />
+      ) : (
         <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />
-      </div>
-    </div>
+      )}
+    </motion.div>
   );
+  
 };
 
 export default Game;
