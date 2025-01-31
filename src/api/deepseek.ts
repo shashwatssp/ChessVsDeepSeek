@@ -1,4 +1,4 @@
-import { Chess } from 'chess.js';  // Import chess.js
+import { Chess } from 'chess.js';  
 
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1';
 const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
@@ -30,12 +30,12 @@ export async function handleMove(
   try {
 
     if(failedMoves.length){
-      console.log(`======FAILED MOVES=======`);
-      console.log(failedMoves.join(', '));
-      console.log(`======FAILED MOVES=======`);
-      console.log(fen);
+      // console.log(`======FAILED MOVES=======`);
+      // console.log(failedMoves.join(', '));
+      // console.log(`======FAILED MOVES=======`);
+      // console.log(fen);
     }else{
-      console.log("Going Great!!")
+      // console.log("Going Great!!")
     }
 
 
@@ -45,10 +45,10 @@ export async function handleMove(
     // Check for checkmate or game over
     if (chess.game_over()) {
       if (chess.in_checkmate()) {
-        console.log('Checkmate detected!');
+        // console.log('Checkmate detected!');
         return null;  // No more moves, game over
       } else if (chess.in_stalemate()) {
-        console.log('Stalemate detected!');
+        // console.log('Stalemate detected!');
         return null;  // No more moves, game over
       }
     }

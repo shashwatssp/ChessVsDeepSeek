@@ -152,16 +152,21 @@ input:focus {
 .error {
   padding: 1rem;
   color: #fff;
-  background-color: #ff1900; /* Bright red background */
+  background-color: #d32f2f; /* Softer red for better readability */
   font-weight: bold;
-  font-size: 1.5rem;
-  border-radius: 4px; /* Rounded corners */
+  font-size: 1.4rem;
+  border-radius: 4px; /* More rounded corners for a modern look */
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Deeper shadow for better visibility */
   animation: pulse 2.5s infinite ease-in-out;
-  max-width: 70%; /* Restrict the width */
-  margin: 20px auto; /* Center it */
-  word-wrap: break-word; /* Prevent text overflow */
+  max-width: 90%; /* Make it more flexible */
+  margin: 20px auto;
+  word-wrap: break-word;
+  display: block; /* Prevents flexbox issue */
+  min-height: 60px; /* Prevent shrinking */
+  line-height: 1.4; /* Ensures better text spacing */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .turn-message-container {

@@ -88,8 +88,8 @@ const Game: React.FC = () => {
         retries++;
       }
       
-      console.log("winner is: ");
-      console.log(winner);
+      // console.log("winner is: ");
+      // console.log(winner);
 
       if(retries==50 && winner=='')
       setError('DeepSeek Failed to make a move. Please restart the game.');
@@ -164,14 +164,14 @@ const Game: React.FC = () => {
         if (winner === 'Human') {
           addToLeaderboard(playerName);
           setGameOverMessage('Checkmate! You won.');
-          setMatchStatus('Checkmate! You won.');
-          setError('CONGRATULATIONS!! YOU WON!!');
+          setMatchStatus('Checkmate!! You won.');
+          setError('WOW!! CHECKMATE!! YOU WON!! CONGRATULATIONS!!');
         }
         else {
           addToLeaderboard('DeepSeek');
           setGameOverMessage('Checkmate! You Lost.');
           setMatchStatus('Checkmate! You Lost.');
-          setError('OOPS!! BETTER LUCK NEXT TIME');
+          setError('OOPS!! CHECKMATE!!');
         }
       }
     }
@@ -211,7 +211,7 @@ const Game: React.FC = () => {
     try {
       const moves = moveHistory.length;
       const docRef = await addDoc(collection(firestore, 'leaderboard'), { name, moves });
-      console.log('Document written with ID:', docRef.id);
+      // console.log('Document written with ID:', docRef.id);
       updateLeaderboard(); // Refresh the leaderboard after adding the new entry
     } catch (error) {
       console.error('Error adding to leaderboard:', error);
