@@ -180,7 +180,7 @@ const Game = () => {
       } else if (game.in_draw()) {
         message = 'Draw by threefold repetition or 50-move rule.';
         updateWinCount('Draw');
-        showAlert('OOPS!! MATCH IS DRAW', 'info');
+        showAlert('Game ended in a draw!', 'info');
       }
 
       setMatchStatus(message);
@@ -192,14 +192,14 @@ const Game = () => {
         if (winner === 'Human') {
           addToLeaderboard(playerName);
           setGameOverMessage('Checkmate! You won.');
-          setMatchStatus('Checkmate!! You won.');
-          showAlert('WOW!! CHECKMATE!! YOU WON!! CONGRATULATIONS!!', 'success');
+          setMatchStatus('Checkmate! You won.');
+          showAlert('Victory! Excellent checkmate!', 'success');
         }
         else {
           addToLeaderboard('DeepSeek');
           setGameOverMessage('Checkmate! You Lost.');
           setMatchStatus('Checkmate! You Lost.');
-          showAlert('OOPS!! CHECKMATE!!', 'warning');
+          showAlert('DeepSeek achieved checkmate!', 'warning');
         }
       }
     }
@@ -249,37 +249,31 @@ const Game = () => {
     <div>
       <div style={{ height: 100 }}></div>
       <motion.div
-      className="chess-game-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Game Stats Strip */}
-      <div className="game-stats-strip">
-        <div className="stat-item">
-          <span className="stat-label">Player:</span>
-          <span className="stat-value">{playerName || 'Guest'}</span>
+        className="chess-game-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Game Stats Strip */}
+        <div className="game-stats-strip">
+          <div className="stat-item">
+            <span className="stat-label">Player:</span>
+            <span className="stat-value">{playerName || 'Guest'}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Total Moves:</span>
+            <span className="stat-value">{moveHistory.length}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Status:</span>
+            <span className="stat-value">{matchStatus}</span>
+          </div>
         </div>
-        <div className="stat-item">
-          <span className="stat-label">Total Moves:</span>
-          <span className="stat-value">{moveHistory.length}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Status:</span>
-          <span className="stat-value">{matchStatus}</span>
-        </div>
-      </div>
 
-      {/* Main Game Board */}
-      <div className="game-board-section">
-        {/* Turn Indicator with Player Icons */}
-        <motion.div
-          className="turn-indicator"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {isAITurn ? (
+        {/* Main Game Board */}
+        <div className="game-board-section">
+          {/* Turn Indicator with Player Icons */}
+          {!gameOverMessage && (
             <motion.div
               className="turn-indicator"
               initial={{ opacity: 0 }}
@@ -303,58 +297,52 @@ const Game = () => {
                 </div>
               )}
             </motion.div>
+          )}
 
-          ) : (
-            <div className="turn-indicator-human">
-              <div className="player-icon human">♟️</div>
-              <span>Your Turn</span>
+          {/* Chess Board - Only show if game is not over */}
+          {!gameOverMessage && (
+            <div className="chessboard-wrapper">
+              <Chessboard
+                position={game.fen()}
+                onPieceDrop={onDrop}
+                boardWidth={boardWidth}
+                arePiecesDraggable={!aiLoading && matchStatus === 'Match is Live' && !isAITurn}
+                customBoardStyle={{
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                  borderRadius: '8px'
+                }}
+                customLightSquareStyle={{ backgroundColor: '#f0d9b5' }}
+                customDarkSquareStyle={{ backgroundColor: '#b58863' }}
+              />
             </div>
           )}
-        </motion.div>
 
-        {/* Chess Board */}
-        <div className="chessboard-wrapper">
-          <Chessboard
-            position={game.fen()}
-            onPieceDrop={onDrop}
-            boardWidth={boardWidth}
-            arePiecesDraggable={!aiLoading && matchStatus === 'Match is Live' && !isAITurn}
-            customBoardStyle={{
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-              borderRadius: '8px'
-            }}
-            customLightSquareStyle={{ backgroundColor: '#f0d9b5' }}
-            customDarkSquareStyle={{ backgroundColor: '#b58863' }}
-          />
+          {/* Game Over Message */}
+          {gameOverMessage && (
+            <motion.div
+              className="game-over-message"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h3>{gameOverMessage}</h3>
+              <button className="replay-button" onClick={() => navigate('/')}>
+                Play Again
+              </button>
+            </motion.div>
+          )}
+
+          {/* Custom Alert */}
+          {alert && (
+            <CustomAlert
+              message={alert.message}
+              type={alert.type}
+              onClose={() => setAlert(null)}
+            />
+          )}
         </div>
-
-        {/* Game Over Message */}
-        {gameOverMessage && (
-          <motion.div
-            className="game-over-message"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            <h3>{gameOverMessage}</h3>
-            <button className="replay-button" onClick={() => navigate('/')}>
-              Play Again
-            </button>
-          </motion.div>
-        )}
-
-        {/* Custom Alert */}
-        {alert && (
-          <CustomAlert
-            message={alert.message}
-            type={alert.type}
-            onClose={() => setAlert(null)}
-          />
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
     </div>
-    
   );
 };
 
