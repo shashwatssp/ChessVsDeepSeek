@@ -246,7 +246,9 @@ const Game = () => {
   };
 
   return (
-    <motion.div
+    <div>
+      <div style={{ height: 100 }}></div>
+      <motion.div
       className="chess-game-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -351,6 +353,8 @@ const Game = () => {
         )}
       </div>
     </motion.div>
+    </div>
+    
   );
 };
 

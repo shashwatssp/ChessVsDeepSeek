@@ -73,7 +73,7 @@ const NameInput: React.FC = () => {
 
     
     <div>
-      <div style={{ height: 300 }}>Content</div>
+      <div style={{ height: 300 }}></div>
       <motion.div
       className="name-input-container"
       initial={{ opacity: 0 }}
