@@ -8,13 +8,6 @@ Challenge the DeepSeek AI in a classic game of chess and see how you rank on the
 **Video Demo:** **[Watch on YouTube](https://youtube.com/shorts/uPFpF2PCLic)** 🎬
 **GitHub Repository:** **[View Code](https://github.com/shashwatssp/chessvsdeepseek)**
 
----
-
-![Gameplay Screenshot](PLACEHOLDER_SCREENSHOT_URL)
-*(Recommendation: Replace PLACEHOLDER_SCREENSHOT_URL with an actual URL to a screenshot or GIF of your game. You could also place the Video Demo link here.)*
-
----
-
 ## ✨ Key Features
 
 *   **Interactive Chess Board:** Play chess with standard rules using an intuitive drag-and-drop or click-to-move interface.
