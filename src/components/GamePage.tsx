@@ -6,25 +6,56 @@ import { handleMove } from '../api/deepseek';
 import { firestore } from '../api/firebaseConfig';
 import { doc, getDoc, updateDoc, setDoc, collection, getDocs, addDoc } from 'firebase/firestore';
 import { motion } from 'framer-motion';
-import { ClipLoader, ClockLoader } from 'react-spinners';
+import { ClipLoader } from 'react-spinners';
 import '../App.css';
 
-const Game: React.FC = () => {
+// Custom Alert Component
+const CustomAlert = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (onClose) onClose();
+    }, 3000);
 
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const getIcon = () => {
+    switch (type) {
+      case 'info': return 'ℹ️';
+      case 'warning': return '⚠️';
+      case 'error': return '❗';
+      case 'success': return '✅';
+      default: return null;
+    }
+  };
+
+  return (
+    <div className={`custom-alert ${type}`}>
+      <span className="alert-icon">{getIcon()}</span>
+      {message}
+    </div>
+  );
+};
+
+const Game = () => {
   const [game, setGame] = useState(new Chess());
-  const [error, setError] = useState<string | null>(null);
-  const [moveHistory, setMoveHistory] = useState<string[]>([]);
-  const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
+  const [alert, setAlert] = useState(null);
+  const [moveHistory, setMoveHistory] = useState([]);
+  const [gameOverMessage, setGameOverMessage] = useState(null);
   const [boardWidth, setBoardWidth] = useState(600);
-  const [aiLoading, setAiLoading] = useState<boolean>(false);
-  const [leaderboard, setLeaderboard] = useState<{ name: string; moves: number }[]>([]);
-  const [matchStatus, setMatchStatus] = useState<string>('Match is Live');
-  const [isFirstMove, setFirstMove] = useState<boolean>(true);
-  const playerName = localStorage.getItem('playerName') || '';
+  const [aiLoading, setAiLoading] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [matchStatus, setMatchStatus] = useState('Match is Live');
+  const [isFirstMove, setFirstMove] = useState(true);
+  const playerName = localStorage.getItem('playerName') || 'Player';
   const navigate = useNavigate();
   const isAITurn = moveHistory.length % 2 === 1;
   let winner = '';
-  
+
+  const showAlert = (message, type = 'info') => {
+    setAlert({ message, type });
+    setTimeout(() => setAlert(null), 3000);
+  };
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -53,21 +84,21 @@ const Game: React.FC = () => {
     return () => window.removeEventListener('resize', calculateBoardWidth);
   }, []);
 
-  const onDrop = (sourceSquare: string, targetSquare: string): boolean => {
+  const onDrop = (sourceSquare, targetSquare) => {
     if (matchStatus !== 'Match is Live') {
-      alert(`Game over: ${matchStatus}`);
+      showAlert(`Game over: ${matchStatus}`, 'warning');
       return false;
     }
     try {
       const move = makeMove(sourceSquare, targetSquare, 'H');
       if (move === null) {
-        alert('Invalid move. Please try again.');
+        showAlert('Invalid move. Please try again.', 'warning');
         return false;
       }
       setTimeout(handleAIMove, 500);
       return true;
-    } catch {
-      setError('An error occurred while making your move.');
+    } catch (error) {
+      showAlert('An error occurred while making your move.', 'error');
       return false;
     }
   };
@@ -77,8 +108,8 @@ const Game: React.FC = () => {
     try {
       setAiLoading(true);
       let retries = 0;
-      let failedMoves: string[] = [];
-      while (retries <50) {
+      let failedMoves = [];
+      while (retries < 50) {
         const aiMove = await handleMove(game.fen(), failedMoves, 'A');
         if (aiMove) {
           const move = makeMove(aiMove.slice(0, 2), aiMove.slice(2, 4), 'A');
@@ -87,22 +118,19 @@ const Game: React.FC = () => {
         }
         retries++;
       }
-      
-      // console.log("winner is: ");
-      // console.log(winner);
 
-      if(retries==50 && winner=='')
-      setError('DeepSeek Failed to make a move. Please restart the game.');
-    } catch {
-      setError('An error occurred during AI’s turn.');
+      if (retries === 50 && winner === '')
+        showAlert('DeepSeek Failed to make a move. Please restart the game.', 'error');
+    } catch (error) {
+      showAlert('An error occurred during AI\'s turn.', 'error');
     } finally {
       setAiLoading(false);
     }
   };
 
-  const makeMove = (from: string, to: string, player: "H" | "A"): string | null => {
+  const makeMove = (from, to, player) => {
     try {
-      const move = game.move({ from: from as any, to: to as any, promotion: 'q' });
+      const move = game.move({ from, to, promotion: 'q' });
       if (move) {
         setGame(new Chess(game.fen()));
         setMoveHistory((prev) => [...prev, `${player}-${from}${to}`]);
@@ -111,13 +139,13 @@ const Game: React.FC = () => {
         return move.san;
       }
 
-      if(isFirstMove)
-      setFirstMove(false);
-    
+      if (isFirstMove)
+        setFirstMove(false);
+
       return null;
     } catch (err) {
       console.error('Error during makeMove:', err);
-      setError('Something went wrong while making a move.');
+      showAlert('Something went wrong while making a move.', 'error');
       return null;
     }
   };
@@ -138,13 +166,13 @@ const Game: React.FC = () => {
   const checkGameOver = () => {
     if (game.game_over()) {
       let message = '';
-    
+
       if (game.in_checkmate()) {
         const lastPlayer = moveHistory.length % 2 === 1 ? 'AI' : 'Human';
         message = `Checkmate! ${lastPlayer === 'Human' ? 'You' : 'AI'} won.`;
         winner = lastPlayer;
       } else if (game.in_stalemate()) {
-        message = 'Stalemate! It’s a draw.';
+        message = 'Stalemate! It\'s a draw.';
         updateWinCount('Draw');
       } else if (game.insufficient_material()) {
         message = 'Draw due to insufficient material.';
@@ -152,12 +180,12 @@ const Game: React.FC = () => {
       } else if (game.in_draw()) {
         message = 'Draw by threefold repetition or 50-move rule.';
         updateWinCount('Draw');
-        setError('OOPS!! MATCH IS DRAW');
+        showAlert('OOPS!! MATCH IS DRAW', 'info');
       }
-    
-      setMatchStatus(message); // Automatically updates match status
+
+      setMatchStatus(message);
       setGameOverMessage(message);
-    
+
       if (winner) {
         updateWinCount(winner);
 
@@ -165,23 +193,23 @@ const Game: React.FC = () => {
           addToLeaderboard(playerName);
           setGameOverMessage('Checkmate! You won.');
           setMatchStatus('Checkmate!! You won.');
-          setError('WOW!! CHECKMATE!! YOU WON!! CONGRATULATIONS!!');
+          showAlert('WOW!! CHECKMATE!! YOU WON!! CONGRATULATIONS!!', 'success');
         }
         else {
           addToLeaderboard('DeepSeek');
           setGameOverMessage('Checkmate! You Lost.');
           setMatchStatus('Checkmate! You Lost.');
-          setError('OOPS!! CHECKMATE!!');
+          showAlert('OOPS!! CHECKMATE!!', 'warning');
         }
       }
     }
   };
 
-  const updateWinCount = async (result: string) => {
+  const updateWinCount = async (result) => {
     try {
       const statsDoc = await getDoc(doc(firestore, 'matchStats', 'stats'));
       if (statsDoc.exists()) {
-        const stats = statsDoc.data() as { humanWins: number; aiWins: number; draw: number };
+        const stats = statsDoc.data();
         const updatedStats = {
           humanWins: stats.humanWins + (result === 'Human' ? 1 : 0),
           aiWins: stats.aiWins + (result === 'AI' ? 1 : 0),
@@ -201,64 +229,129 @@ const Game: React.FC = () => {
         name: doc.data().name,
         moves: doc.data().moves,
       }));
-      setLeaderboard(leaderboardData.sort((a, b) => a.moves - b.moves)); // Sort leaderboard
+      setLeaderboard(leaderboardData.sort((a, b) => a.moves - b.moves));
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
     }
   };
 
-  const addToLeaderboard = async (name: string) => {
+  const addToLeaderboard = async (name) => {
     try {
       const moves = moveHistory.length;
       const docRef = await addDoc(collection(firestore, 'leaderboard'), { name, moves });
-      // console.log('Document written with ID:', docRef.id);
-      updateLeaderboard(); // Refresh the leaderboard after adding the new entry
+      updateLeaderboard();
     } catch (error) {
       console.error('Error adding to leaderboard:', error);
     }
   };
 
-  if (error) return <div className="error">{error}</div>;
-
   return (
     <motion.div
-      className="game-container"
+      className="chess-game-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      {gameOverMessage && (
+      {/* Game Stats Strip */}
+      <div className="game-stats-strip">
+        <div className="stat-item">
+          <span className="stat-label">Player:</span>
+          <span className="stat-value">{playerName || 'Guest'}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Total Moves:</span>
+          <span className="stat-value">{moveHistory.length}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Status:</span>
+          <span className="stat-value">{matchStatus}</span>
+        </div>
+      </div>
+
+      {/* Main Game Board */}
+      <div className="game-board-section">
+        {/* Turn Indicator with Player Icons */}
         <motion.div
-          className="game-over"
+          className="turn-indicator"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          {gameOverMessage}
+          {isAITurn ? (
+            <motion.div
+              className="turn-indicator"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {isAITurn ? (
+                <div className="turn-indicator-ai">
+                  <div className="player-icon ai">🤖</div>
+                  <span>DeepSeek is thinking</span>
+                  {aiLoading && (
+                    <span className="thinking-dots">
+                      <ClipLoader color="#4a90e2" size={16} css={{ marginLeft: '8px', verticalAlign: 'middle' }} />
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="turn-indicator-human">
+                  <div className="player-icon human">♟️</div>
+                  <span>Your Turn</span>
+                </div>
+              )}
+            </motion.div>
+
+          ) : (
+            <div className="turn-indicator-human">
+              <div className="player-icon human">♟️</div>
+              <span>Your Turn</span>
+            </div>
+          )}
         </motion.div>
-      )}
-  
-  <motion.div
-  className="turn-message-container"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.5 }}
->
-   {(
-    <div className={`turn-message ${isAITurn ? 'ai-turn' : 'human-turn'}`}>
-      {isAITurn ? "DeepSeek's Turn" : "Your Turn"}
-    </div>
-  )}
-</motion.div>
-  
-      {aiLoading ? (
-          <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />
-      ) : (
-        <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={boardWidth} />
-      )}
+
+        {/* Chess Board */}
+        <div className="chessboard-wrapper">
+          <Chessboard
+            position={game.fen()}
+            onPieceDrop={onDrop}
+            boardWidth={boardWidth}
+            arePiecesDraggable={!aiLoading && matchStatus === 'Match is Live' && !isAITurn}
+            customBoardStyle={{
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+              borderRadius: '8px'
+            }}
+            customLightSquareStyle={{ backgroundColor: '#f0d9b5' }}
+            customDarkSquareStyle={{ backgroundColor: '#b58863' }}
+          />
+        </div>
+
+        {/* Game Over Message */}
+        {gameOverMessage && (
+          <motion.div
+            className="game-over-message"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h3>{gameOverMessage}</h3>
+            <button className="replay-button" onClick={() => navigate('/')}>
+              Play Again
+            </button>
+          </motion.div>
+        )}
+
+        {/* Custom Alert */}
+        {alert && (
+          <CustomAlert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
     </motion.div>
   );
-  
 };
 
 export default Game;

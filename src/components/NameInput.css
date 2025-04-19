@@ -1,0 +1,329 @@
+/* NameInput.css */
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #2c3e50;
+    --accent-color: #e67e22;
+    --background-color: #f5f7fa;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --text-light: #666666;
+    --border-radius: 12px;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --human-color: #27ae60;
+    --ai-color: #e74c3c;
+    --draw-color: #f39c12;
+  }
+  
+  .name-input-container {
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 20px 15px;
+  }
+  
+  .content-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .app-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  
+  .app-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  .tagline {
+    color: var(--text-light);
+    margin-top: 5px;
+    font-size: 0.9rem;
+  }
+  
+  /* Cards */
+  .card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .name-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .name-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: var(--secondary-color);
+  }
+  
+  /* Input group vertical on mobile, horizontal on desktop */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: stretch;
+  }
+  
+  .input-group input {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  
+  .input-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  .input-group button {
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  
+  .input-group button:hover {
+    background-color: #3a7bc8;
+  }
+  
+  /* Desktop: input and button side by side */
+  @media (min-width: 768px) {
+    .input-group {
+      flex-direction: row;
+      gap: 12px;
+      width: 100%;
+    }
+    .input-group input,
+    .input-group button {
+      width: auto;
+      flex: 1 1 0px;
+      /* To allow them to share width */
+    }
+    .input-group button {
+      flex: 0 0 120px;
+      max-width: 160px;
+      width: 100%;
+    }
+  }
+  
+  
+  /* Stats Section */
+  .stats-section {
+    margin-top: 30px;
+  }
+  
+  .stats-card h2, .moves-card h2, .leaderboard-card h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+  }
+  
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+  }
+  
+  .stat-item.human {
+    background-color: rgba(39, 174, 96, 0.1);
+  }
+  
+  .stat-item.ai {
+    background-color: rgba(231, 76, 60, 0.1);
+  }
+  
+  .stat-item.draw {
+    background-color: rgba(243, 156, 18, 0.1);
+  }
+  
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  
+  .stat-item.human .stat-value {
+    color: var(--human-color);
+  }
+  
+  .stat-item.ai .stat-value {
+    color: var(--ai-color);
+  }
+  
+  .stat-item.draw .stat-value {
+    color: var(--draw-color);
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 5px;
+  }
+  
+  .stat-percent {
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  
+  /* Total Moves */
+  .total-moves-display {
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .moves-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+  
+  /* Leaderboard */
+  .leaderboard-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .leaderboard-item:last-child {
+    border-bottom: none;
+  }
+  
+  .rank {
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+  
+  .player-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .player-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .achievement {
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  /* Loaders */
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  
+  /* Messages */
+  .error-message {
+    color: #e74c3c;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .coming-soon {
+    color: var(--text-light);
+    text-align: center;
+    font-style: italic;
+    padding: 15px 0;
+  }
+  
+  /* Footer */
+  .app-footer {
+    margin-top: 30px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.8rem;
+  }
+  
+  /* Media Queries for bigger screens */
+  @media (min-width: 768px) {
+    .content-wrapper {
+      max-width: 700px;
+    }
+    
+    .app-header h1 {
+      font-size: 2.5rem;
+    }
+    
+    .input-group {
+      flex-direction: row;
+    }
+    
+    .input-group input {
+      flex-grow: 1;
+    }
+    
+    .input-group button {
+      min-width: 120px;
+    }
+    
+    .stats-grid {
+      gap: 15px;
+    }
+    
+    .leaderboard-card, .stats-card, .moves-card {
+      margin-bottom: 25px;
+    }
+  }
+  
