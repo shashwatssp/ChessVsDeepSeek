@@ -1,11 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import wasm from 'vite-plugin-wasm';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: '0.0.0.0', // This allows connections from any device on your network
-    port: 5173, // Default Vite port, change if needed
+  plugins: [
+    react(),
+    wasm()
+  ],
+  worker: {
+    format: 'es',
+    plugins: ()=> [wasm()]
   },
-})
+  optimizeDeps: {
+    exclude: ['stockfish.js']
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173
+  }
+});

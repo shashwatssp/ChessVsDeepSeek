@@ -8,6 +8,7 @@ import { doc, getDoc, updateDoc, setDoc, collection, getDocs, addDoc } from 'fir
 import { motion } from 'framer-motion';
 import { ClipLoader } from 'react-spinners';
 import '../App.css';
+import { handleStockfishMove } from '../api/stockfish';
 
 // Custom Alert Component
 const CustomAlert = ({ message, type, onClose }) => {
@@ -103,30 +104,75 @@ const Game = () => {
     }
   };
 
+  // const handleAIMove = async () => {
+  //   if (matchStatus !== 'Match is Live') return;
+  //   try {
+  //     setAiLoading(true);
+  //     let retries = 0;
+  //     let failedMoves = [];
+  //     while (retries < 50) {
+  //       const aiMove = await handleMove(game.fen(), failedMoves, 'A');
+  //       if (aiMove) {
+  //         const move = makeMove(aiMove.slice(0, 2), aiMove.slice(2, 4), 'A');
+  //         if (move) return checkGameOver();
+  //         failedMoves.push(aiMove);
+  //       }
+  //       retries++;
+  //     }
+
+  //     if (retries === 50 && winner === '')
+  //       showAlert('DeepSeek Failed to make a move. Please restart the game.', 'error');
+  //   } catch (error) {
+  //     showAlert('An error occurred during AI\'s turn.', 'error');
+  //   } finally {
+  //     setAiLoading(false);
+  //   }
+  // };
+
   const handleAIMove = async () => {
     if (matchStatus !== 'Match is Live') return;
     try {
       setAiLoading(true);
-      let retries = 0;
-      let failedMoves = [];
-      while (retries < 50) {
-        const aiMove = await handleMove(game.fen(), failedMoves, 'A');
-        if (aiMove) {
-          const move = makeMove(aiMove.slice(0, 2), aiMove.slice(2, 4), 'A');
-          if (move) return checkGameOver();
-          failedMoves.push(aiMove);
+      // Get the best move from Stockfish
+      const bestMove = await handleStockfishMove(game.fen());
+      
+      if (bestMove && bestMove.length >= 4) {
+        const from = bestMove.slice(0, 2);
+        const to = bestMove.slice(2, 4);
+        
+        // Handle promotion if move length is 5 (e.g., e7e8q)
+        let promotion = undefined;
+        if (bestMove.length === 5) {
+          promotion = bestMove.charAt(4);
         }
-        retries++;
+        
+        // Make the move
+        const move = game.move({ 
+          from, 
+          to, 
+          promotion: promotion || 'q' 
+        });
+        
+        if (move) {
+          setGame(new Chess(game.fen()));
+          setMoveHistory((prev) => [...prev, `A-${from}${to}`]);
+          updateMoveCount();
+          checkGameOver();
+        } else {
+          showAlert('Stockfish suggested an invalid move. Please restart the game.', 'error');
+        }
+      } else {
+        showAlert('Stockfish failed to generate a move. Please restart the game.', 'error');
       }
-
-      if (retries === 50 && winner === '')
-        showAlert('DeepSeek Failed to make a move. Please restart the game.', 'error');
     } catch (error) {
+      console.error('Error during Stockfish move:', error);
       showAlert('An error occurred during AI\'s turn.', 'error');
     } finally {
       setAiLoading(false);
     }
   };
+  
+  
 
   const makeMove = (from, to, player) => {
     try {
