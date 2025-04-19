@@ -4,7 +4,7 @@ Challenge the DeepSeek AI in a classic game of chess and see how you rank on the
 
 **Live Demo:** **[Play Now!](http://chessvsdeepseek.netlify.app/)**
 
-**Video Demo:** **[Watch on YouTube](https://youtube.com/shorts/uPFpF2PCLic)** 🎬
+**Video Demo:** **[Watch on YouTube](https://youtu.be/t7yh6W-ukJs)** 🎬
 
 **GitHub Repository:** **[View Code](https://github.com/shashwatssp/chessvsdeepseek)**
 
