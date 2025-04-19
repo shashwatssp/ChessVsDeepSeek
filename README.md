@@ -2,10 +2,10 @@
 
 Challenge the DeepSeek AI in a classic game of chess and see how you rank on the global leaderboard! This interactive web application provides a clean interface for playing chess against an AI opponent.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_NETLIFY_BADGE_ID/deploy-status)](https://app.netlify.com/sites/chessvsdeepseek/deploys) <!-- Optional: Get badge ID from Netlify site settings -->
-
 **Live Demo:** **[Play Now!](http://chessvsdeepseek.netlify.app/)**
+
 **Video Demo:** **[Watch on YouTube](https://youtube.com/shorts/uPFpF2PCLic)** 🎬
+
 **GitHub Repository:** **[View Code](https://github.com/shashwatssp/chessvsdeepseek)**
 
 ## ✨ Key Features
@@ -104,16 +104,13 @@ Contributions are welcome! If you have suggestions or find bugs, please open an 
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` file for more information. *(Recommendation: Add an actual LICENSE file, e.g., MIT)*
-
 ## 🙏 Acknowledgements
 
 *   DeepSeek AI
 *   Firebase
 *   React Community
-*   (Add any specific libraries like chess.js or react-chessboard here if you used them)
+*   chess.js
+*   react-chessboard
 
 ---
 
