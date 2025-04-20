@@ -82,7 +82,7 @@ const NameInput: React.FC = () => {
     >
       <div className="content-wrapper">
         <header className="app-header">
-          <h1>Chess vs DeepSeek</h1>
+          <h1>ChessVsDeepSeek</h1>
           <p className="tagline">Challenge the AI and make your mark</p>
         </header>
 
